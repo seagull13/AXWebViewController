@@ -47,7 +47,7 @@ typedef struct {
 @end
 #endif
 
-@interface AXWebViewController ()<NJKWebViewProgressDelegate, SKStoreProductViewControllerDelegate>
+@interface AXWebViewController ()< SKStoreProductViewControllerDelegate>
 {
     BOOL _loading;
     UIBarButtonItem * __weak _doneItem;
@@ -1450,17 +1450,6 @@ BOOL AX_WEB_VIEW_CONTROLLER_iOS10_0_AVAILABLE() { return AX_WEB_VIEW_CONTROLLER_
 #endif
 
 
-#pragma mark - NJKWebViewProgressDelegate
-
--(void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress
-{
-    // Add progress view to navigation bar.
-    if (self.navigationController && self.progressView.superview != self.navigationController.navigationBar) {
-        [self updateFrameOfProgressView];
-        [self.navigationController.navigationBar addSubview:self.progressView];
-    }
-    [_progressView setProgress:progress animated:YES];
-}
 
 #pragma mark - SKStoreProductViewControllerDelegate.
 - (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {

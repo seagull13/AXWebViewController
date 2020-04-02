@@ -46,8 +46,6 @@
 #endif
 
 #import <UIKit/UIKit.h>
-#import <NJKWebViewProgress/NJKWebViewProgress.h>
-#import <NJKWebViewProgress/NJKWebViewProgressView.h>
 #if AX_WEB_VIEW_CONTROLLER_USING_WEBKIT
 #import <WebKit/WebKit.h>
 #import "AXSecurityPolicy.h"
