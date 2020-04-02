@@ -265,7 +265,7 @@ API_AVAILABLE(ios(7.0))
 @property(readonly, nonatomic) UILabel *descriptionLabel;
 @end
 
-#if AX_WEB_VIEW_CONTROLLER_USING_WEBKIT
+
 @interface AXWebViewController (Security)
 /// Challenge handler for the credential.
 @property(copy, nonatomic, nullable) WKWebViewDidReceiveAuthenticationChallengeHandler challengeHandler;
@@ -273,5 +273,5 @@ API_AVAILABLE(ios(7.0))
 /// `AXWebViewController` uses the `defaultPolicy` unless otherwise specified.
 @property(readwrite, nonatomic, nullable) AXSecurityPolicy *securityPolicy;
 @end
-#endif
+
 NS_ASSUME_NONNULL_END

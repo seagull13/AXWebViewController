@@ -200,7 +200,6 @@
 				01513BE71C28F70700CB8238 /* Sources */,
 				01513BE81C28F70700CB8238 /* Frameworks */,
 				01513BE91C28F70700CB8238 /* Resources */,
-				F3182DEE5A600ABFAF07F7DC /* [CP] Embed Pods Frameworks */,
 				90CC7504393E7254ABAF393F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -233,9 +232,11 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 01513BE21C28F70700CB8238;
 			productRefGroup = 01513BEC1C28F70700CB8238 /* Products */;
@@ -287,32 +288,18 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-AXWebViewController/Pods-AXWebViewController-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-AXWebViewController/Pods-AXWebViewController-resources.sh",
 				"${PODS_ROOT}/AXIndicatorView/AXIndicatorView/Classes/AXIndicatorView.bundle",
 				"${PODS_ROOT}/AXPracticalHUD/AXPracticalHUD/AXPracticalHUD/AXPracticalHUD.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AXIndicatorView.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AXPracticalHUD.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AXWebViewController/Pods-AXWebViewController-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F3182DEE5A600ABFAF07F7DC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AXWebViewController/Pods-AXWebViewController-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AXWebViewController/Pods-AXWebViewController-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
