@@ -122,22 +122,18 @@ API_AVAILABLE(ios(8.0))
 }
 #else
 API_AVAILABLE(ios(7.0))
-@interface AXWebViewController : UIViewController <UIWebViewDelegate>
+@interface AXWebViewController : UIViewController 
 {
 @protected
-    UIWebView *_webView;
     NSURL *_URL;
 }
 #endif
 /// Delegate.
 @property(assign, nonatomic) id<AXWebViewControllerDelegate>delegate;
-#if AX_WEB_VIEW_CONTROLLER_USING_WEBKIT
+
 /// WebKit web view.
 @property(readonly, nonatomic) WKWebView *webView;
-#else
-/// Web view.
-@property(readonly, nonatomic) UIWebView *webView;
-#endif
+
 #if AX_WEB_VIEW_CONTROLLER_USING_WEBKIT
 /// Default is NO. Enabled to allow present alert views.
 @property(assign, nonatomic) BOOL enabledWebViewUIDelegate;

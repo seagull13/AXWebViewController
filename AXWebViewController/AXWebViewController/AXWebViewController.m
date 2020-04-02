@@ -575,7 +575,7 @@ BOOL AX_WEB_VIEW_CONTROLLER_iOS10_0_AVAILABLE() { return AX_WEB_VIEW_CONTROLLER_
 }
 
 #pragma mark - Getters
-#if AX_WEB_VIEW_CONTROLLER_USING_WEBKIT
+
 - (WKWebView *)webView {
     if (_webView) return _webView;
     WKWebViewConfiguration *config = _configuration;
@@ -640,18 +640,7 @@ BOOL AX_WEB_VIEW_CONTROLLER_iOS10_0_AVAILABLE() { return AX_WEB_VIEW_CONTROLLER_
 }
 
 - (UIView *)containerView { return [self.view viewWithTag:kContainerViewTag]; }
-#else
-- (UIWebView*)webView {
-    if (_webView) return _webView;
-    _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-    _webView.backgroundColor = [UIColor clearColor];
-    _webView.delegate = self;
-    _webView.scalesPageToFit = YES;
-    [_webView addGestureRecognizer:self.swipePanGesture];
-    _webView.translatesAutoresizingMaskIntoConstraints = NO;
-    return _webView;
-}
-#endif
+
 
 - (NSBundle *)resourceBundle{
     if (_resourceBundle) return _resourceBundle;
@@ -1200,7 +1189,6 @@ BOOL AX_WEB_VIEW_CONTROLLER_iOS10_0_AVAILABLE() { return AX_WEB_VIEW_CONTROLLER_
 }
 #endif
 
-#if AX_WEB_VIEW_CONTROLLER_USING_WEBKIT
 #pragma mark - WKUIDelegate
 - (nullable WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
     WKFrameInfo *frameInfo = navigationAction.targetFrame;
@@ -1460,124 +1448,7 @@ BOOL AX_WEB_VIEW_CONTROLLER_iOS10_0_AVAILABLE() { return AX_WEB_VIEW_CONTROLLER_
     [alert addAction:okAction];
 }
 #endif
-#else
-#pragma mark - UIWebViewDelegate
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    // URL actions
-    if ([request.URL.absoluteString isEqualToString:kAX404NotFoundURLKey] || [request.URL.absoluteString isEqualToString:kAXNetworkErrorURLKey]) {
-        [self loadURL:_URL]; return NO;
-    }
-    // Resolve URL. Fixs the issue: https://github.com/devedbox/AXWebViewController/issues/7
-    NSURLComponents *components = [[NSURLComponents alloc] initWithString:request.URL.absoluteString];
-    // For appstore.
-    if ([[NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] 'https://itunes.apple.com/' OR SELF BEGINSWITH[cd] 'mailto:' OR SELF BEGINSWITH[cd] 'tel:' OR SELF BEGINSWITH[cd] 'telprompt:'"] evaluateWithObject:request.URL.absoluteString]) {
-        if ([[NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] 'https://itunes.apple.com/'"] evaluateWithObject:components.URL.absoluteString] && !_reviewsAppInAppStore) {
-            [[AXPracticalHUD sharedHUD] showNormalInView:self.view.window text:nil detail:nil configuration:^(AXPracticalHUD *HUD) {
-                HUD.removeFromSuperViewOnHide = YES;
-            }];
-            SKStoreProductViewController *productVC = [[SKStoreProductViewController alloc] init];
-            productVC.delegate = self;
-            NSError *error;
-            NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"id[1-9]\\d*" options:NSRegularExpressionCaseInsensitive error:&error];
-            NSTextCheckingResult *result = [regex firstMatchInString:components.URL.absoluteString options:NSMatchingReportCompletion range:NSMakeRange(0, components.URL.absoluteString.length)];
-            
-            if (!error && result) {
-                NSRange range = NSMakeRange(result.range.location+2, result.range.length-2);
-                [productVC loadProductWithParameters:@{SKStoreProductParameterITunesItemIdentifier: @([[components.URL.absoluteString substringWithRange:range] integerValue])} completionBlock:^(BOOL result, NSError * _Nullable error) {
-                    if (!result || error) {
-                        [[AXPracticalHUD sharedHUD] showErrorInView:self.view.window text:error.localizedDescription detail:nil configuration:^(AXPracticalHUD *HUD) {
-                            HUD.removeFromSuperViewOnHide = YES;
-                        }];
-                        [[AXPracticalHUD sharedHUD] hide:YES afterDelay:1.5 completion:NULL];
-                    } else {
-                        [[AXPracticalHUD sharedHUD] hide:YES afterDelay:0.5 completion:NULL];
-                    }
-                }];
-                [self presentViewController:productVC animated:YES completion:NULL];
-                decisionHandler(WKNavigationActionPolicyCancel);
-                return;
-            } else {
-                [[AXPracticalHUD sharedHUD] hide:YES afterDelay:0.5 completion:NULL];
-            }
-        }
-        if ([[UIApplication sharedApplication] canOpenURL:request.URL]) {
-            if (AX_WEB_VIEW_CONTROLLER_AVAILABLE_ON(_kiOS10_0)/*UIDevice.currentDevice.systemVersion.floatValue >= 10.0*/) {
-                [UIApplication.sharedApplication openURL:request.URL options:@{} completionHandler:NULL];
-            } else {
-                [[UIApplication sharedApplication] openURL:request.URL];
-            }
-        }
-        return NO;
-    } else if (![[NSPredicate predicateWithFormat:@"SELF MATCHES[cd] 'https' OR SELF MATCHES[cd] 'http' OR SELF MATCHES[cd] 'file' OR SELF MATCHES[cd] 'about'"] evaluateWithObject:components.scheme]) {// For any other schema.
-        
-        
-        if (@available(iOS 8.0, *)) { // openURL if ios version is low then 8 , app will crash
-            if (!self.checkUrlCanOpen || [[UIApplication sharedApplication] canOpenURL:components.URL]) {
-                if (@available(iOS 10.0, *)) {
-                    [UIApplication.sharedApplication openURL:components.URL options:@{} completionHandler:NULL];
-                }else{
-                    [[UIApplication sharedApplication] openURL:components.URL];
-                }
-            }
-        }else{
-            if ([[UIApplication sharedApplication] canOpenURL:components.URL]) {
-                [[UIApplication sharedApplication] openURL:components.URL];
-            }
-        }
 
-        return NO;
-    }
-    
-    switch (navigationType) {
-        case UIWebViewNavigationTypeLinkClicked: {
-            [self pushCurrentSnapshotViewWithRequest:request];
-            break;
-        }
-        case UIWebViewNavigationTypeFormSubmitted: {
-            [self pushCurrentSnapshotViewWithRequest:request];
-            break;
-        }
-        case UIWebViewNavigationTypeBackForward: {
-            break;
-        }
-        case UIWebViewNavigationTypeReload: {
-            break;
-        }
-        case UIWebViewNavigationTypeFormResubmitted: {
-            break;
-        }
-        case UIWebViewNavigationTypeOther: {
-            [self pushCurrentSnapshotViewWithRequest:request];
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-    if (_navigationType == AXWebViewControllerNavigationBarItem) {
-        [self updateNavigationItems];
-    }
-    if (_navigationType == AXWebViewControllerNavigationToolItem) {
-        [self updateToolbarItems];
-    }
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-    [self _didStartLoadWithObj:nil];
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self didFinishLoad];
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    if (error.code == NSURLErrorCancelled) {
-        [webView reload]; return;
-    }
-    [self didFailLoadWithError:error];
-}
-#endif
 
 #pragma mark - NJKWebViewProgressDelegate
 
